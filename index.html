@@ -10,10 +10,172 @@
 </head>
 
 <body>
-    <header class="d-flex justify-content-between p-3 align-items-center bg-light text-dark">
+    <header class="bg-light text-dark py-3">
+        <div class="container d-flex justify-content-between align-items-center">
 
 
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-secondary text-white fw-bold d-flex justify-content-center align-items-center rounded"
+                    style="width: 40px; height: 40px;">
+                    LOGO
+                </div>
+                <div>
+                    <h1 class="h5 m-0 fw-bold">TASKS CONTROL</h1>
+                    <small class="text-muted">organiza tus tareas, cumple tus metas...</small>
+                </div>
+            </div>
+
+
+            <div>
+                <button class="btn btn-dark btn-sm rounded-pill me-1">TODAS</button>
+                <button class="btn btn-outline-dark btn-sm rounded-pill">Completadas</button>
+            </div>
+
+        </div>
     </header>
+
+    <main class="container my-4">
+        <div class="row g-4">
+
+
+            <div class="col-md-4">
+                <div class="bg-light text-dark p-4 rounded shadow-sm">
+                    <h2 class="h4 mb-4 fw-bold">NUEVA TAREA</h2>
+
+                    <form id="taskForm">
+
+                        <div class="mb-3">
+                            <label for="titulo" class="form-label fw-semibold">Título de la tarea</label>
+                            <input type="text" id="titulo" class="form-control" placeholder="Ej: Estudiar JavaScript">
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label fw-semibold">Descripción</label>
+                            <textarea id="descripcion" class="form-control" rows="4"
+                                placeholder="Escribe los detalles de la tarea..."></textarea>
+                        </div>
+
+
+                        <div class="mb-4">
+                            <label for="prioridad" class="form-label fw-semibold">Prioridad</label>
+                            <select id="prioridad" class="form-select">
+                                <option value="Alta">Alta</option>
+                                <option value="Media">Media</option>
+                                <option value="Baja">Baja</option>
+                            </select>
+                        </div>
+
+
+                        <button type="button" class="btn btn-dark w-100 py-2 fw-semibold">Agregar tarea</button>
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="col-md-8">
+                <div class="bg-light text-dark p-4 rounded shadow-sm">
+                    <h2 class="h4 mb-4 fw-bold">LISTA DE TAREAS</h2>
+
+                    <!-- Buscador de Tareas -->
+                    <div class="row g-2 mb-4">
+                        <div class="col-8 col-sm-9">
+                            <input type="text" class="form-control" placeholder="Buscar tareas...">
+                        </div>
+                        <div class="col-4 col-sm-3">
+                            <button class="btn btn-dark w-100">Filtrar</button>
+                        </div>
+                    </div>
+
+                    <!-- PASO 2: CONTENEDOR DE LISTA DE TAREAS (List Group) -->
+                    <div class="list-group d-flex flex-column gap-3" id="taskList">
+
+                        <!-- Tarea 1 -->
+                        <div
+                            class="list-group-item list-group-item-action rounded shadow-sm border-start border-warning border-4 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0 fw-bold h6">Estudiar JavaScript</h5>
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            </div>
+                            <p class="mb-2 text-secondary small">
+                                Repasar funciones flecha, promesas y manipulación del DOM.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted"><strong>Fecha:</strong> 15/08/2026</small>
+                                <span class="badge bg-danger">Alta</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarea 2 -->
+                        <div
+                            class="list-group-item list-group-item-action rounded shadow-sm border-start border-info border-4 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0 fw-bold h6">Diseñar maquetas en Figma</h5>
+                                <span class="badge bg-info text-dark">En Proceso</span>
+                            </div>
+                            <p class="mb-2 text-secondary small">
+                                Crear los prototipos de la interfaz móvil y de escritorio.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted"><strong>Fecha:</strong> 18/08/2026</small>
+                                <span class="badge bg-secondary">Media</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarea 3 -->
+                        <div
+                            class="list-group-item list-group-item-action rounded shadow-sm border-start border-success border-4 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0 fw-bold h6">Instalar entorno de trabajo</h5>
+                                <span class="badge bg-success">Completada</span>
+                            </div>
+                            <p class="mb-2 text-secondary small">
+                                Configurar Node.js, Git y carpetas base del proyecto.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted"><strong>Fecha:</strong> 10/08/2026</small>
+                                <span class="badge bg-success">Baja</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarea 4 -->
+                        <div
+                            class="list-group-item list-group-item-action rounded shadow-sm border-start border-warning border-4 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0 fw-bold h6">Conectar backend con API</h5>
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            </div>
+                            <p class="mb-2 text-secondary small">
+                                Crear peticiones HTTP usando fetch para traer datos reales.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted"><strong>Fecha:</strong> 22/08/2026</small>
+                                <span class="badge bg-danger">Alta</span>
+                            </div>
+                        </div>
+
+                        <!-- Tarea 5 -->
+                        <div
+                            class="list-group-item list-group-item-action rounded shadow-sm border-start border-success border-4 p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0 fw-bold h6">Realizar pruebas unitarias</h5>
+                                <span class="badge bg-success">Completada</span>
+                            </div>
+                            <p class="mb-2 text-secondary small">
+                                Validar que las funciones agreguen y filtren tareas sin errores.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted"><strong>Fecha:</strong> 05/08/2026</small>
+                                <span class="badge bg-secondary">Media</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
 
 
 
