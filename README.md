@@ -17,4 +17,4 @@
 ---
 
 ## 4. Demo
-* [Ver Demo en Vivo](https://tu-usuario.github.io/tu-repositorio/) — Aplicación funcional desplegada en GitHub Pages.
+* [Ver Demo en Vivo](https://strikys12.github.io/proyecto-individual-davidQuiroz/) — Aplicación funcional desplegada en GitHub Pages.
