@@ -1,8 +1,3 @@
-# proyecto-individual-davidQuiroz
-
-
-
-
 
 # TASKS CONTROL — Planificador de Tareas
 
