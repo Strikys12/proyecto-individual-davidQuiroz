@@ -46,19 +46,20 @@
 
                         <div class="mb-3">
                             <label for="titulo" class="form-label fw-semibold">Título de la tarea</label>
-                            <input type="text" id="titulo" class="form-control" placeholder="Ej: Estudiar JavaScript">
+                            <input type="text" id="titulo-tarea" class="form-control"
+                                placeholder="Ej: Estudiar JavaScript">
                         </div>
 
 
                         <div class="mb-3">
                             <label for="descripcion" class="form-label fw-semibold">Descripción</label>
-                            <textarea id="descripcion" class="form-control" rows="4"
+                            <textarea id="descripcion-tarea" class="form-control" rows="4"
                                 placeholder="Escribe los detalles de la tarea..."></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label for="fecha" class="form-label fw-semibold">Fecha de entrega</label>
-                            <input type="date" id="fecha" class="form-control">
+                            <input type="date" id="fecha-entrega" class="form-control">
                         </div>
 
 
@@ -72,7 +73,7 @@
                         </div>
 
 
-                        <button type="button" class="btn btn-dark w-100 py-2 fw-semibold">Agregar tarea</button>
+                        <button type="sumbit" class="btn btn-dark w-100 py-2 fw-semibold">Agregar tarea</button>
                     </form>
                 </div>
             </div>
@@ -82,7 +83,7 @@
                 <div class="bg-light text-dark p-4 rounded shadow-sm">
                     <h2 class="h4 mb-4 fw-bold">LISTA DE TAREAS</h2>
 
-                    <!-- Buscador de Tareas -->
+
                     <div class="row g-2 mb-4">
                         <div class="col-8 col-sm-9">
                             <input type="text" class="form-control" placeholder="Buscar tareas...">
@@ -92,10 +93,10 @@
                         </div>
                     </div>
 
-                    <!-- PASO 2: CONTENEDOR DE LISTA DE TAREAS (List Group) -->
+
                     <div class="list-group d-flex flex-column gap-3" id="taskList">
 
-                        <!-- Tarea 1 -->
+
                         <div
                             class="list-group-item list-group-item-action rounded shadow-sm border-start border-warning border-4 p-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -111,7 +112,7 @@
                             </div>
                         </div>
 
-                        <!-- Tarea 2 -->
+
                         <div
                             class="list-group-item list-group-item-action rounded shadow-sm border-start border-info border-4 p-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -127,7 +128,7 @@
                             </div>
                         </div>
 
-                        <!-- Tarea 3 -->
+
                         <div
                             class="list-group-item list-group-item-action rounded shadow-sm border-start border-success border-4 p-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -143,7 +144,7 @@
                             </div>
                         </div>
 
-                        <!-- Tarea 4 -->
+
                         <div
                             class="list-group-item list-group-item-action rounded shadow-sm border-start border-warning border-4 p-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -159,7 +160,7 @@
                             </div>
                         </div>
 
-                        <!-- Tarea 5 -->
+
                         <div
                             class="list-group-item list-group-item-action rounded shadow-sm border-start border-success border-4 p-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -193,6 +194,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <script src="/js/script.js"></script>
 </body>
 
 </html>
