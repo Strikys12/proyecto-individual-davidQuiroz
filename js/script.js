@@ -18,12 +18,22 @@ formularioTarea.addEventListener('submit', (e) => {
     const validarFormulario = validFormFieldInput(formData);
 
     if (validarFormulario) {
-        console.log("Formulario enviado correctamente:", formData);
+        Swal.fire({
+            icon: 'success',
+            title: 'Tarea agregada',
+            text: 'La tarea ha sido agregada correctamente.',
+            confirmButtonText: 'Aceptar'
+        });
         formularioTarea.reset();
 
 
     } else {
-        console.log("Por favor, complete todos los campos del formulario.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Por favor, complete todos los campos del formulario.',
+            confirmButtonText: 'Aceptar'
+        });
     }
 })
 
