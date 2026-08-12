@@ -16,34 +16,45 @@ formularioTarea.addEventListener('submit', (e) => {
     }
 
     const validarFormulario = validFormFieldInput(formData);
+    const totalCampos = Object.keys(formData).length;
 
-    if (validarFormulario) {
-        Swal.fire({
-            icon: 'success',
-            title: 'Tarea agregada',
-            text: 'La tarea ha sido agregada correctamente.',
-            confirmButtonText: 'Aceptar'
-        });
-        formularioTarea.reset();
-
-
-    } else {
+    if (validarFormulario.length === totalCampos) {
         Swal.fire({
             icon: 'error',
-            title: 'Error',
+            title: 'Formulario incompleto',
             text: 'Por favor, complete todos los campos del formulario.',
             confirmButtonText: 'Aceptar'
         });
+
+
+
+    } else if (validarFormulario.length > 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Formulario incompleto',
+            html: `Te falta completar los siguientes campos: <br><br><b>${validarFormulario.join(', ')}</b>`,
+            confirmButtonText: 'Aceptar'
+        });
+    } else {
+        Swal.fire({
+            icon: 'success',
+            title: 'Tarea agregada',
+            text: 'La tarea se ha agregado correctamente.',
+            confirmButtonText: 'Aceptar'
+        })
+        formularioTarea.reset();
     }
+
 })
 
-
-
 function validFormFieldInput(data) {
-    const titulo = data.titulo !== '';
-    const descripcion = data.descripcion !== '';
-    const fechaEntrega = data.fechaEntrega !== '';
-    const prioridad = data.prioridad !== '';
+    const datosFaltantes = []
 
-    return titulo && descripcion && fechaEntrega && prioridad;
+    if (!data.titulo) datosFaltantes.push('titulo');
+    if (!data.descripcion) datosFaltantes.push('descripcion');
+    if (!data.fechaEntrega) datosFaltantes.push('fecha de entrega');
+    if (!data.prioridad) datosFaltantes.push('prioridad');
+
+    return datosFaltantes;
 }
+;
