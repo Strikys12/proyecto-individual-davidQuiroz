@@ -1,3 +1,9 @@
+const taskManager = new TaskManager();
+console.log(taskManager.tasks);
+
+
+
+
 const formularioTarea = document.getElementById('formularioTarea');
 const tituloTarea = document.getElementById('titulo-tarea');
 const descripcionTarea = document.getElementById('descripcion-tarea');
@@ -56,5 +62,34 @@ function validFormFieldInput(data) {
     if (!data.prioridad) datosFaltantes.push('prioridad');
 
     return datosFaltantes;
-}
-;
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleButtons = document.querySelectorAll('.btn-toggle-complete');
+
+    toggleButtons.forEach((button) => {
+        button.addEventListener('click', (event) => {
+            const item = event.target.closest('.list-group-item');
+            const badge = item.querySelector('.status-badge');
+
+
+            item.classList.toggle('completed-task');
+
+            if (item.classList.contains('completed-task')) {
+                button.textContent = 'Desmarcar';
+                button.classList.replace('btn-outline-success', 'btn-secondary');
+                if (badge) {
+                    badge.textContent = 'Completada';
+                    badge.className = 'badge bg-success status-badge';
+                }
+            } else {
+                button.textContent = 'Completar';
+                button.classList.replace('btn-secondary', 'btn-outline-success');
+                if (badge) {
+                    badge.textContent = 'Pendiente';
+                    badge.className = 'badge bg-warning text-dark status-badge';
+                }
+            }
+        });
+    });
+});

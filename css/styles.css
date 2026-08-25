@@ -1,0 +1,10 @@
+
+.completed-task {
+  background-color: #e8f5e9 !important; /* Fondo verde claro */
+  border-left-color: #198754 !important; /* Borde verde de Bootstrap */
+}
+
+.completed-task .task-title {
+  text-decoration: line-through;
+  color: #6c757d;
+}
