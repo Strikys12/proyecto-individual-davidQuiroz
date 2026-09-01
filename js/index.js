@@ -1,5 +1,4 @@
 const taskManager = new TaskManager();
-console.log(taskManager.tasks);
 
 
 
@@ -42,6 +41,14 @@ formularioTarea.addEventListener('submit', (e) => {
             confirmButtonText: 'Aceptar'
         });
     } else {
+
+        taskManager.addTask(
+            formData.titulo,
+            formData.descripcion,
+            formData.fechaEntrega,
+            'PORHACER'
+        );
+
         Swal.fire({
             icon: 'success',
             title: 'Tarea agregada',
@@ -49,6 +56,8 @@ formularioTarea.addEventListener('submit', (e) => {
             confirmButtonText: 'Aceptar'
         })
         formularioTarea.reset();
+
+        console.log(taskManager.tasks);
     }
 
 })
@@ -65,9 +74,9 @@ function validFormFieldInput(data) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    const toggleButtons = document.querySelectorAll('.btn-toggle-complete');
+    const botonCompletar = document.querySelectorAll('.boton-completar');
 
-    toggleButtons.forEach((button) => {
+    botonCompletar.forEach((button) => {
         button.addEventListener('click', (event) => {
             const item = event.target.closest('.list-group-item');
             const badge = item.querySelector('.status-badge');
