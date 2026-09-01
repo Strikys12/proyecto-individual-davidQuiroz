@@ -1,8 +1,5 @@
 const taskManager = new TaskManager();
 
-
-
-
 const formularioTarea = document.getElementById('formularioTarea');
 const tituloTarea = document.getElementById('titulo-tarea');
 const descripcionTarea = document.getElementById('descripcion-tarea');
@@ -17,8 +14,7 @@ formularioTarea.addEventListener('submit', (e) => {
         descripcion: descripcionTarea.value.trim(),
         fechaEntrega: fechaEntrega.value,
         prioridad: prioridadTarea.value
-
-    }
+    };
 
     const validarFormulario = validFormFieldInput(formData);
     const totalCampos = Object.keys(formData).length;
@@ -31,8 +27,6 @@ formularioTarea.addEventListener('submit', (e) => {
             confirmButtonText: 'Aceptar'
         });
 
-
-
     } else if (validarFormulario.length > 0) {
         Swal.fire({
             icon: 'error',
@@ -41,29 +35,32 @@ formularioTarea.addEventListener('submit', (e) => {
             confirmButtonText: 'Aceptar'
         });
     } else {
-
         taskManager.addTask(
             formData.titulo,
             formData.descripcion,
             formData.fechaEntrega,
+            formData.prioridad,
             'PORHACER'
         );
+
+        taskManager.save();
+        taskManager.render();
 
         Swal.fire({
             icon: 'success',
             title: 'Tarea agregada',
             text: 'La tarea se ha agregado correctamente.',
             confirmButtonText: 'Aceptar'
-        })
+        });
+
         formularioTarea.reset();
 
         console.log(taskManager.tasks);
     }
-
-})
+});
 
 function validFormFieldInput(data) {
-    const datosFaltantes = []
+    const datosFaltantes = [];
 
     if (!data.titulo) datosFaltantes.push('titulo');
     if (!data.descripcion) datosFaltantes.push('descripcion');
@@ -71,16 +68,17 @@ function validFormFieldInput(data) {
     if (!data.prioridad) datosFaltantes.push('prioridad');
 
     return datosFaltantes;
-};
+}
 
 document.addEventListener('DOMContentLoaded', () => {
+    taskManager.load();
+    taskManager.render();
     const botonCompletar = document.querySelectorAll('.boton-completar');
 
     botonCompletar.forEach((button) => {
         button.addEventListener('click', (event) => {
             const item = event.target.closest('.list-group-item');
             const badge = item.querySelector('.status-badge');
-
 
             item.classList.toggle('completed-task');
 
@@ -100,5 +98,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    });
+
+
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('delete-button')) {
+            const parentTask = event.target.closest('.list-group-item'); // í
+
+            if (parentTask) {
+                const taskId = Number(parentTask.dataset.taskId);
+                taskManager.deleteTask(taskId);
+                taskManager.save();
+                taskManager.render();
+            }
+        }
     });
 });
