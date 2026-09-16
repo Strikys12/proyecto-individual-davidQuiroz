@@ -1,18 +1,18 @@
 const taskManager = new TaskManager();
 
-const formularioTarea = document.getElementById('formularioTarea');
-const tituloTarea = document.getElementById('titulo-tarea');
-const descripcionTarea = document.getElementById('descripcion-tarea');
-const fechaEntrega = document.getElementById('fecha-entrega');
-const prioridadTarea = document.getElementById('prioridad');
+const newTaskForm = document.querySelector('#formularioTarea');
+const tituloTarea = document.querySelector('#titulo-tarea');
+const descripcionTarea = document.querySelector('#descripcion-tarea');
+const fechaEntrega = document.querySelector('#fecha-entrega');
+const prioridadTarea = document.querySelector('#prioridad');
 
-formularioTarea.addEventListener('submit', (e) => {
+newTaskForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const formData = {
-        titulo: tituloTarea.value.trim(),
-        descripcion: descripcionTarea.value.trim(),
-        fechaEntrega: fechaEntrega.value,
+        name: tituloTarea.value.trim(),
+        description: descripcionTarea.value.trim(),
+        dueDate: fechaEntrega.value,
         prioridad: prioridadTarea.value
     };
 
@@ -36,10 +36,9 @@ formularioTarea.addEventListener('submit', (e) => {
         });
     } else {
         taskManager.addTask(
-            formData.titulo,
-            formData.descripcion,
-            formData.fechaEntrega,
-            formData.prioridad,
+            formData.name,
+            formData.description,
+            formData.dueDate,
             'PORHACER'
         );
 
@@ -53,7 +52,7 @@ formularioTarea.addEventListener('submit', (e) => {
             confirmButtonText: 'Aceptar'
         });
 
-        formularioTarea.reset();
+        newTaskForm.reset();
 
         console.log(taskManager.tasks);
     }
@@ -62,9 +61,9 @@ formularioTarea.addEventListener('submit', (e) => {
 function validFormFieldInput(data) {
     const datosFaltantes = [];
 
-    if (!data.titulo) datosFaltantes.push('titulo');
-    if (!data.descripcion) datosFaltantes.push('descripcion');
-    if (!data.fechaEntrega) datosFaltantes.push('fecha de entrega');
+    if (!data.name) datosFaltantes.push('titulo');
+    if (!data.description) datosFaltantes.push('descripcion');
+    if (!data.dueDate) datosFaltantes.push('fecha de entrega');
     if (!data.prioridad) datosFaltantes.push('prioridad');
 
     return datosFaltantes;
@@ -73,37 +72,33 @@ function validFormFieldInput(data) {
 document.addEventListener('DOMContentLoaded', () => {
     taskManager.load();
     taskManager.render();
-    const botonCompletar = document.querySelectorAll('.boton-completar');
 
-    botonCompletar.forEach((button) => {
-        button.addEventListener('click', (event) => {
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('boton-completar')) {
             const item = event.target.closest('.list-group-item');
             const badge = item.querySelector('.status-badge');
 
             item.classList.toggle('completed-task');
 
             if (item.classList.contains('completed-task')) {
-                button.textContent = 'Desmarcar';
-                button.classList.replace('btn-outline-success', 'btn-secondary');
+                event.target.textContent = 'Desmarcar';
+                event.target.classList.replace('btn-outline-success', 'btn-secondary');
                 if (badge) {
                     badge.textContent = 'Completada';
                     badge.className = 'badge bg-success status-badge';
                 }
             } else {
-                button.textContent = 'Completar';
-                button.classList.replace('btn-secondary', 'btn-outline-success');
+                event.target.textContent = 'Completar';
+                event.target.classList.replace('btn-secondary', 'btn-outline-success');
                 if (badge) {
                     badge.textContent = 'Pendiente';
                     badge.className = 'badge bg-warning text-dark status-badge';
                 }
             }
-        });
-    });
+        }
 
-
-    document.addEventListener('click', (event) => {
         if (event.target.classList.contains('delete-button')) {
-            const parentTask = event.target.closest('.list-group-item'); // í
+            const parentTask = event.target.closest('.list-group-item');
 
             if (parentTask) {
                 const taskId = Number(parentTask.dataset.taskId);
