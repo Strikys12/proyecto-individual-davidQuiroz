@@ -9,7 +9,7 @@ const tasksList = document.querySelector('#taskList');
 
 let currentFilter = 'TODAS';
 
-newTaskForm.addEventListener('submit', (e) => {
+newTaskForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const formData = {
@@ -20,17 +20,8 @@ newTaskForm.addEventListener('submit', (e) => {
     };
 
     const validarFormulario = validFormFieldInput(formData);
-    const totalCampos = Object.keys(formData).length;
 
-    if (validarFormulario.length === totalCampos) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Formulario incompleto',
-            text: 'Por favor, complete todos los campos del formulario.',
-            confirmButtonText: 'Aceptar'
-        });
-
-    } else if (validarFormulario.length > 0) {
+    if (validarFormulario.length > 0) {
         Swal.fire({
             icon: 'error',
             title: 'Formulario incompleto',
@@ -38,7 +29,7 @@ newTaskForm.addEventListener('submit', (e) => {
             confirmButtonText: 'Aceptar'
         });
     } else {
-        taskManager.addTask(
+        await taskManager.addTask(
             formData.name,
             formData.description,
             formData.dueDate,
@@ -46,13 +37,13 @@ newTaskForm.addEventListener('submit', (e) => {
             'PORHACER'
         );
 
-        taskManager.save();
+        currentFilter = 'TODAS';
         taskManager.render(currentFilter);
 
         Swal.fire({
             icon: 'success',
             title: 'Tarea agregada',
-            text: 'La tarea se ha agregado correctamente.',
+            text: 'La tarea se ha guardado en la base de datos.',
             confirmButtonText: 'Aceptar'
         });
 
@@ -63,63 +54,117 @@ newTaskForm.addEventListener('submit', (e) => {
 function validFormFieldInput(data) {
     const datosFaltantes = [];
 
-    if (!data.name) datosFaltantes.push('titulo');
-    if (!data.description) datosFaltantes.push('descripcion');
+    if (!data.name) datosFaltantes.push('título');
+    if (!data.description) datosFaltantes.push('descripción');
     if (!data.dueDate) datosFaltantes.push('fecha de entrega');
     if (!data.prioridad) datosFaltantes.push('prioridad');
 
     return datosFaltantes;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    taskManager.load();
+document.addEventListener('DOMContentLoaded', async () => {
+    await taskManager.fetchTasks();
     taskManager.render(currentFilter);
 
-    // Configurar los botones de filtro superiores ("TODAS" y "Completadas")
-    const btnTodas = document.querySelectorAll('button, a').find ?
-        Array.from(document.querySelectorAll('button, a')).find(el => el.textContent.trim().toUpperCase() === 'TODAS') : null;
-
-    const btnCompletadas = Array.from(document.querySelectorAll('button, a')).find(el => el.textContent.trim() === 'Completadas');
-
-    if (btnTodas) {
-        btnTodas.addEventListener('click', () => {
+    document.addEventListener('click', (e) => {
+        const text = e.target.textContent.trim().toUpperCase();
+        if (text === 'TODAS') {
+            e.preventDefault();
             currentFilter = 'TODAS';
             taskManager.render('TODAS');
-        });
-    }
-
-    if (btnCompletadas) {
-        btnCompletadas.addEventListener('click', () => {
+        } else if (text === 'COMPLETADAS') {
+            e.preventDefault();
             currentFilter = 'Completadas';
             taskManager.render('Completadas');
-        });
-    }
+        }
+    });
 });
 
 if (tasksList) {
-    tasksList.addEventListener('click', (event) => {
+    tasksList.addEventListener('click', async (event) => {
         if (event.target.classList.contains('done-button')) {
             const parentTask = event.target.closest('.list-group-item');
-
             if (parentTask) {
                 const taskId = Number(parentTask.dataset.taskId);
                 const task = taskManager.getTaskById(taskId);
-
                 if (task) {
-                    task.status = (task.status === 'Terminada' || task.status === 'DONE' || task.status === 'Completada') ? 'PORHACER' : 'Terminada';
-                    taskManager.save();
+                    const newStatus = (task.status === 'Terminada' || task.status === 'DONE' || task.status === 'Completada') ? 'PORHACER' : 'Terminada';
+                    const updatedData = { ...task, status: newStatus };
+                    await taskManager.updateTask(taskId, updatedData);
                     taskManager.render(currentFilter);
+                }
+            }
+        }
+
+        if (event.target.classList.contains('edit-button')) {
+            const parentTask = event.target.closest('.list-group-item');
+            if (parentTask) {
+                const taskId = Number(parentTask.dataset.taskId);
+                const task = taskManager.getTaskById(taskId);
+                if (task) {
+                    const { value: formValues } = await Swal.fire({
+                        title: 'Editar Tarea',
+                        html: `
+                            <div class="text-start mb-3">
+                                <label for="swal-input-name" class="form-label fw-bold text-secondary small">Título de la tarea</label>
+                                <input id="swal-input-name" class="form-control" value="${task.name}">
+                            </div>
+                            <div class="text-start mb-3">
+                                <label for="swal-input-desc" class="form-label fw-bold text-secondary small">Descripción</label>
+                                <textarea id="swal-input-desc" class="form-control" rows="3">${task.description}</textarea>
+                            </div>
+                            <div class="text-start mb-3">
+                                <label for="swal-input-date" class="form-label fw-bold text-secondary small">Fecha de entrega</label>
+                                <input id="swal-input-date" type="date" class="form-control" value="${task.dueDate}">
+                            </div>
+                            <div class="text-start mb-2">
+                                <label for="swal-input-prio" class="form-label fw-bold text-secondary small">Prioridad</label>
+                                <select id="swal-input-prio" class="form-select">
+                                    <option value="Alta" ${task.prioridad === 'Alta' ? 'selected' : ''}>Alta</option>
+                                    <option value="Media" ${task.prioridad === 'Media' ? 'selected' : ''}>Media</option>
+                                    <option value="Baja" ${task.prioridad === 'Baja' ? 'selected' : ''}>Baja</option>
+                                </select>
+                            </div>
+                        `,
+                        focusConfirm: false,
+                        showCancelButton: true,
+                        confirmButtonText: 'Guardar cambios',
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonColor: '#0d6efd',
+                        customClass: {
+                            confirmButton: 'btn btn-primary px-4 me-2',
+                            cancelButton: 'btn btn-secondary px-4'
+                        },
+                        buttonsStyling: false,
+                        preConfirm: () => {
+                            const name = document.getElementById('swal-input-name').value.trim();
+                            const desc = document.getElementById('swal-input-desc').value.trim();
+                            const date = document.getElementById('swal-input-date').value;
+                            const prio = document.getElementById('swal-input-prio').value;
+
+                            if (!name || !desc || !date) {
+                                Swal.showValidationMessage('Por favor completa todos los campos');
+                                return false;
+                            }
+
+                            return { name, description: desc, dueDate: date, prioridad: prio };
+                        }
+                    });
+
+                    if (formValues) {
+                        const updatedData = { ...task, ...formValues };
+                        await taskManager.updateTask(taskId, updatedData);
+                        taskManager.render(currentFilter);
+                    }
                 }
             }
         }
 
         if (event.target.classList.contains('delete-button')) {
             const parentTask = event.target.closest('.list-group-item');
-
             if (parentTask) {
                 const taskId = Number(parentTask.dataset.taskId);
-                taskManager.deleteTask(taskId);
-                taskManager.save();
+                await taskManager.deleteTask(taskId);
                 taskManager.render(currentFilter);
             }
         }

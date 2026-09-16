@@ -1,39 +1,71 @@
 class TaskManager {
-    constructor(currentId = 0) {
+    constructor() {
         this.tasks = [];
-        this.currentId = currentId;
+        this.apiUrl = 'http://localhost:8080/api/tasks';
     }
 
-    addTask(name, description, dueDate, prioridad, status = 'PORHACER') {
-        this.currentId++;
-        this.tasks.push({
-            id: this.currentId,
-            name: name,
-            description: description,
-            dueDate: dueDate,
-            prioridad: prioridad,
-            status: status
-        });
-    }
-
-    deleteTask(taskId) {
-        const newTasks = [];
-        for (let task of this.tasks) {
-            if (task.id !== taskId) {
-                newTasks.push(task);
+    async fetchTasks() {
+        try {
+            const response = await fetch(this.apiUrl);
+            if (response.ok) {
+                this.tasks = await response.json();
             }
+        } catch (error) {
+            console.error('Error al obtener las tareas:', error);
         }
-        this.tasks = newTasks;
+    }
+
+    async addTask(name, description, dueDate, prioridad, status = 'PORHACER') {
+        const newTask = { name, description, dueDate, prioridad, status };
+        try {
+            const response = await fetch(this.apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newTask)
+            });
+            if (response.ok) {
+                const createdTask = await response.json();
+                this.tasks.push(createdTask);
+            }
+        } catch (error) {
+            console.error('Error al guardar la tarea:', error);
+        }
+    }
+
+    async updateTask(id, updatedData) {
+        try {
+            const response = await fetch(`${this.apiUrl}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+            if (response.ok) {
+                const updatedTask = await response.json();
+                const index = this.tasks.findIndex(t => t.id === id);
+                if (index !== -1) {
+                    this.tasks[index] = updatedTask;
+                }
+            }
+        } catch (error) {
+            console.error('Error al actualizar la tarea:', error);
+        }
+    }
+
+    async deleteTask(taskId) {
+        try {
+            const response = await fetch(`${this.apiUrl}/${taskId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                this.tasks = this.tasks.filter(task => task.id !== taskId);
+            }
+        } catch (error) {
+            console.error('Error al eliminar la tarea:', error);
+        }
     }
 
     getTaskById(taskId) {
-        let foundTask;
-        for (let task of this.tasks) {
-            if (task.id === taskId) {
-                foundTask = task;
-            }
-        }
-        return foundTask;
+        return this.tasks.find(task => task.id === taskId);
     }
 
     createTaskHtml(id, name, description, dueDate, prioridad, status) {
@@ -53,38 +85,26 @@ class TaskManager {
                 <p class="mb-2 text-secondary small">
                     ${description}
                 </p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted"><strong>Fecha:</strong> ${dueDate}</small>
-                    <span class="badge ${prioridad === 'Alta' ? 'bg-danger' : prioridad === 'Media' ? 'bg-secondary' : 'bg-success'}">${prioridad}</span>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <small class="text-muted"><strong>Fecha:</strong> ${dueDate}</small>
+                        <span class="badge ${prioridad === 'Alta' ? 'bg-danger' : prioridad === 'Media' ? 'bg-secondary' : 'bg-success'}">${prioridad}</span>
+                    </div>
                    
-                    <button class="done-button btn ${isDone ? 'btn-secondary' : 'btn-success'} btn-sm">
-                        ${isDone ? 'Terminada' : 'Completar'}
-                    </button>
-
-                    <button class="delete-button btn btn-outline-danger btn-sm">
-                        Eliminar
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button class="done-button btn ${isDone ? 'btn-secondary' : 'btn-success'} btn-sm rounded">
+                            ${isDone ? 'Terminada' : 'Completar'}
+                        </button>
+                        <button class="edit-button btn btn-outline-primary btn-sm rounded">
+                            Editar
+                        </button>
+                        <button class="delete-button btn btn-outline-danger btn-sm rounded">
+                            Eliminar
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
-    }
-
-    save() {
-        const tasksJson = JSON.stringify(this.tasks);
-        localStorage.setItem('tasks', tasksJson);
-        const currentId = String(this.currentId);
-        localStorage.setItem('currentId', currentId);
-    }
-
-    load() {
-        if (localStorage.getItem('tasks')) {
-            const tasksJson = localStorage.getItem('tasks');
-            this.tasks = JSON.parse(tasksJson);
-        }
-        if (localStorage.getItem('currentId')) {
-            const currentId = localStorage.getItem('currentId');
-            this.currentId = Number(currentId);
-        }
     }
 
     render(filterStatus = 'TODAS') {
@@ -109,10 +129,9 @@ class TaskManager {
             tasksHtmlList.push(taskHtml);
         }
 
-        const tasksHtml = tasksHtmlList.join('\n');
         const tasksList = document.querySelector('#taskList');
         if (tasksList) {
-            tasksList.innerHTML = tasksHtml;
+            tasksList.innerHTML = tasksHtmlList.join('\n');
         }
     }
 }
