@@ -5,6 +5,7 @@ const tituloTarea = document.querySelector('#titulo-tarea');
 const descripcionTarea = document.querySelector('#descripcion-tarea');
 const fechaEntrega = document.querySelector('#fecha-entrega');
 const prioridadTarea = document.querySelector('#prioridad');
+const tasksList = document.querySelector('#taskList');
 
 newTaskForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -39,6 +40,7 @@ newTaskForm.addEventListener('submit', (e) => {
             formData.name,
             formData.description,
             formData.dueDate,
+            formData.prioridad,
             'PORHACER'
         );
 
@@ -53,8 +55,6 @@ newTaskForm.addEventListener('submit', (e) => {
         });
 
         newTaskForm.reset();
-
-        console.log(taskManager.tasks);
     }
 });
 
@@ -72,27 +72,21 @@ function validFormFieldInput(data) {
 document.addEventListener('DOMContentLoaded', () => {
     taskManager.load();
     taskManager.render();
+});
 
-    document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('boton-completar')) {
-            const item = event.target.closest('.list-group-item');
-            const badge = item.querySelector('.status-badge');
+if (tasksList) {
+    tasksList.addEventListener('click', (event) => {
+        if (event.target.classList.contains('done-button')) {
+            const parentTask = event.target.closest('.list-group-item');
 
-            item.classList.toggle('completed-task');
+            if (parentTask) {
+                const taskId = Number(parentTask.dataset.taskId);
+                const task = taskManager.getTaskById(taskId);
 
-            if (item.classList.contains('completed-task')) {
-                event.target.textContent = 'Desmarcar';
-                event.target.classList.replace('btn-outline-success', 'btn-secondary');
-                if (badge) {
-                    badge.textContent = 'Completada';
-                    badge.className = 'badge bg-success status-badge';
-                }
-            } else {
-                event.target.textContent = 'Completar';
-                event.target.classList.replace('btn-secondary', 'btn-outline-success');
-                if (badge) {
-                    badge.textContent = 'Pendiente';
-                    badge.className = 'badge bg-warning text-dark status-badge';
+                if (task) {
+                    task.status = 'DONE';
+                    taskManager.save();
+                    taskManager.render();
                 }
             }
         }
@@ -108,4 +102,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-});
+}
