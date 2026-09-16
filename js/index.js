@@ -7,6 +7,8 @@ const fechaEntrega = document.querySelector('#fecha-entrega');
 const prioridadTarea = document.querySelector('#prioridad');
 const tasksList = document.querySelector('#taskList');
 
+let currentFilter = 'TODAS';
+
 newTaskForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -45,7 +47,7 @@ newTaskForm.addEventListener('submit', (e) => {
         );
 
         taskManager.save();
-        taskManager.render();
+        taskManager.render(currentFilter);
 
         Swal.fire({
             icon: 'success',
@@ -71,7 +73,27 @@ function validFormFieldInput(data) {
 
 document.addEventListener('DOMContentLoaded', () => {
     taskManager.load();
-    taskManager.render();
+    taskManager.render(currentFilter);
+
+    // Configurar los botones de filtro superiores ("TODAS" y "Completadas")
+    const btnTodas = document.querySelectorAll('button, a').find ?
+        Array.from(document.querySelectorAll('button, a')).find(el => el.textContent.trim().toUpperCase() === 'TODAS') : null;
+
+    const btnCompletadas = Array.from(document.querySelectorAll('button, a')).find(el => el.textContent.trim() === 'Completadas');
+
+    if (btnTodas) {
+        btnTodas.addEventListener('click', () => {
+            currentFilter = 'TODAS';
+            taskManager.render('TODAS');
+        });
+    }
+
+    if (btnCompletadas) {
+        btnCompletadas.addEventListener('click', () => {
+            currentFilter = 'Completadas';
+            taskManager.render('Completadas');
+        });
+    }
 });
 
 if (tasksList) {
@@ -84,9 +106,9 @@ if (tasksList) {
                 const task = taskManager.getTaskById(taskId);
 
                 if (task) {
-                    task.status = 'DONE';
+                    task.status = (task.status === 'Terminada' || task.status === 'DONE' || task.status === 'Completada') ? 'PORHACER' : 'Terminada';
                     taskManager.save();
-                    taskManager.render();
+                    taskManager.render(currentFilter);
                 }
             }
         }
@@ -98,7 +120,7 @@ if (tasksList) {
                 const taskId = Number(parentTask.dataset.taskId);
                 taskManager.deleteTask(taskId);
                 taskManager.save();
-                taskManager.render();
+                taskManager.render(currentFilter);
             }
         }
     });

@@ -42,13 +42,13 @@ class TaskManager {
         if (prioridad === 'Media') borderColor = 'border-info';
         if (prioridad === 'Baja') borderColor = 'border-success';
 
-        const isDone = status === 'DONE' || status === 'Completada';
+        const isDone = status === 'DONE' || status === 'Completada' || status === 'Terminada';
 
         return `
             <div class="list-group-item list-group-item-action rounded shadow-sm border-start ${borderColor} border-4 p-3 mb-3 ${isDone ? 'completed-task' : ''}" data-task-id="${id}">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="mb-0 fw-bold h6">${name}</h5>
-                    <span class="badge ${isDone ? 'bg-success' : 'bg-warning text-dark'} status-badge">${isDone ? 'DONE' : 'Pendiente'}</span>
+                    <span class="badge ${isDone ? 'bg-success' : 'bg-warning text-dark'} status-badge">${isDone ? 'Terminada' : 'Pendiente'}</span>
                 </div>
                 <p class="mb-2 text-secondary small">
                     ${description}
@@ -58,7 +58,7 @@ class TaskManager {
                     <span class="badge ${prioridad === 'Alta' ? 'bg-danger' : prioridad === 'Media' ? 'bg-secondary' : 'bg-success'}">${prioridad}</span>
                    
                     <button class="done-button btn ${isDone ? 'btn-secondary' : 'btn-success'} btn-sm">
-                        ${isDone ? 'Completado' : 'Mark As Done'}
+                        ${isDone ? 'Terminada' : 'Completar'}
                     </button>
 
                     <button class="delete-button btn btn-outline-danger btn-sm">
@@ -87,11 +87,17 @@ class TaskManager {
         }
     }
 
-    render() {
+    render(filterStatus = 'TODAS') {
         const tasksHtmlList = [];
 
         for (let i = 0; i < this.tasks.length; i++) {
             const task = this.tasks[i];
+            const isDone = task.status === 'DONE' || task.status === 'Completada' || task.status === 'Terminada';
+
+            if (filterStatus === 'Completadas' && !isDone) {
+                continue;
+            }
+
             const taskHtml = this.createTaskHtml(
                 task.id,
                 task.name,
