@@ -23,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingScreen.classList.add('fade-out');
             setTimeout(() => {
                 loadingScreen.remove();
-            }, 400); // Tiempo de la transición CSS
-        }, 500);
+            }, 600); // Tiempo de la transición CSS
+        }, 2000);
     }
 });
 
