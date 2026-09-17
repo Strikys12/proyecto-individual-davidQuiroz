@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="40" height="40">
+  <rect width="100" height="100" rx="20" fill="#111827"/>
+  <!-- Letra T -->
+  <path d="M25 32 H55 M40 32 V72" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Letra C -->
+  <path d="M78 40 C72 32 58 32 52 42 C48 50 48 62 55 70 C60 76 72 74 78 64" stroke="#0ea5e9" stroke-width="8" stroke-linecap="round" fill="none"/>
+</svg>

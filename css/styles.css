@@ -1,10 +1,65 @@
-
-.completed-task {
-  background-color: #e8f5e9 !important; /* Fondo verde claro */
-  border-left-color: #198754 !important; /* Borde verde de Bootstrap */
+body {
+    background-color: #f8f9fa;
 }
 
-.completed-task .task-title {
-  text-decoration: line-through;
-  color: #6c757d;
+/* Estilo con impacto para el Navbar superior */
+.navbar-custom {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    border-bottom: 3px solid #374151;
+}
+
+/* Columna estilo Kanban con gris intermedio suave */
+.kanban-column {
+    background-color: #eef2f5;
+    border: 1px solid #dee2e6;
+}
+
+/* Tarjetas de tareas */
+.list-group-item {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.list-group-item:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.completed-task {
+    background-color: #f1f8f3 !important;
+    border-left-color: #198754 !important;
+}
+
+.completed-task h5 {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+/* Colores personalizados y separados para los estados de las tarjetas */
+.badge-porhacer {
+    background-color: #f59e0b !important; /* Ambar/Naranja brillante */
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.badge-enprogreso {
+    background-color: #0ea5e9 !important; /* Azul cian vivo muy distinguible */
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.badge-completada {
+    background-color: #10b981 !important; /* Verde esmeralda */
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* Clases auxiliares */
+.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.very-small {
+    font-size: 0.75rem;
 }

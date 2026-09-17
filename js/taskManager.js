@@ -1,137 +1,131 @@
 class TaskManager {
     constructor() {
         this.tasks = [];
-        this.apiUrl = 'http://localhost:8080/api/tasks';
+        this.loadFromLocalStorage();
     }
 
-    async fetchTasks() {
-        try {
-            const response = await fetch(this.apiUrl);
-            if (response.ok) {
-                this.tasks = await response.json();
-            }
-        } catch (error) {
-            console.error('Error al obtener las tareas:', error);
+    loadFromLocalStorage() {
+        const storedTasks = localStorage.getItem('tasks');
+        if (storedTasks) {
+            this.tasks = JSON.parse(storedTasks);
+        } else {
+            this.tasks = [
+                { id: 1, name: 'Estudiar JavaScript', description: 'Repasar funciones flecha y DOM.', dueDate: '2026-08-15', prioridad: 'Alta', status: 'PORHACER' },
+                { id: 2, name: 'Diseñar maquetas en Figma', description: 'Prototipos de interfaz móvil y escritorio.', dueDate: '2026-08-18', prioridad: 'Media', status: 'ENPROGRESO' },
+                { id: 3, name: 'Instalar entorno', description: 'Configurar Node.js y Git.', dueDate: '2026-08-10', prioridad: 'Baja', status: 'COMPLETADA' }
+            ];
+            this.saveToLocalStorage();
         }
     }
 
-    async addTask(name, description, dueDate, prioridad, status = 'PORHACER') {
-        const newTask = { name, description, dueDate, prioridad, status };
-        try {
-            const response = await fetch(this.apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newTask)
-            });
-            if (response.ok) {
-                const createdTask = await response.json();
-                this.tasks.push(createdTask);
-            }
-        } catch (error) {
-            console.error('Error al guardar la tarea:', error);
+    saveToLocalStorage() {
+        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    }
+
+    addTask(name, description, dueDate, prioridad, status = 'PORHACER') {
+        const newTask = {
+            id: Date.now(),
+            name,
+            description,
+            dueDate,
+            prioridad,
+            status
+        };
+        this.tasks.push(newTask);
+        this.saveToLocalStorage();
+    }
+
+    updateTask(id, updatedData) {
+        const index = this.tasks.findIndex(t => t.id === id);
+        if (index !== -1) {
+            this.tasks[index] = { ...this.tasks[index], ...updatedData };
+            this.saveToLocalStorage();
         }
     }
 
-    async updateTask(id, updatedData) {
-        try {
-            const response = await fetch(`${this.apiUrl}/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedData)
-            });
-            if (response.ok) {
-                const updatedTask = await response.json();
-                const index = this.tasks.findIndex(t => t.id === id);
-                if (index !== -1) {
-                    this.tasks[index] = updatedTask;
-                }
-            }
-        } catch (error) {
-            console.error('Error al actualizar la tarea:', error);
-        }
-    }
-
-    async deleteTask(taskId) {
-        try {
-            const response = await fetch(`${this.apiUrl}/${taskId}`, {
-                method: 'DELETE'
-            });
-            if (response.ok) {
-                this.tasks = this.tasks.filter(task => task.id !== taskId);
-            }
-        } catch (error) {
-            console.error('Error al eliminar la tarea:', error);
-        }
+    deleteTask(taskId) {
+        this.tasks = this.tasks.filter(task => task.id !== taskId);
+        this.saveToLocalStorage();
     }
 
     getTaskById(taskId) {
         return this.tasks.find(task => task.id === taskId);
     }
 
-    createTaskHtml(id, name, description, dueDate, prioridad, status) {
+    createTaskHtml(task) {
         let borderColor = 'border-warning';
-        if (prioridad === 'Alta') borderColor = 'border-danger';
-        if (prioridad === 'Media') borderColor = 'border-info';
-        if (prioridad === 'Baja') borderColor = 'border-success';
+        if (task.prioridad === 'Alta') borderColor = 'border-danger';
+        if (task.prioridad === 'Media') borderColor = 'border-info';
+        if (task.prioridad === 'Baja') borderColor = 'border-success';
 
-        const isDone = status === 'DONE' || status === 'Completada' || status === 'Terminada';
+        const isDone = task.status === 'COMPLETADA';
+
+        // Clases separadas para los badges de estado
+        let badgeClass = 'badge-porhacer';
+        let statusLabel = 'POR HACER';
+        if (task.status === 'ENPROGRESO') {
+            badgeClass = 'badge-enprogreso';
+            statusLabel = 'EN PROGRESO';
+        } else if (task.status === 'COMPLETADA') {
+            badgeClass = 'badge-completada';
+            statusLabel = 'COMPLETADA';
+        }
 
         return `
-            <div class="list-group-item list-group-item-action rounded shadow-sm border-start ${borderColor} border-4 p-3 mb-3 ${isDone ? 'completed-task' : ''}" data-task-id="${id}">
+            <div class="list-group-item rounded shadow-sm border-start ${borderColor} border-4 p-3 ${isDone ? 'completed-task' : ''}" data-task-id="${task.id}">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="mb-0 fw-bold h6">${name}</h5>
-                    <span class="badge ${isDone ? 'bg-success' : 'bg-warning text-dark'} status-badge">${isDone ? 'Terminada' : 'Pendiente'}</span>
+                    <h5 class="mb-0 fw-bold h6 text-dark">${task.name}</h5>
+                    <span class="badge ${badgeClass}">${statusLabel}</span>
                 </div>
                 <p class="mb-2 text-secondary small">
-                    ${description}
+                    ${task.description}
                 </p>
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <small class="text-muted"><strong>Fecha:</strong> ${dueDate}</small>
-                        <span class="badge ${prioridad === 'Alta' ? 'bg-danger' : prioridad === 'Media' ? 'bg-secondary' : 'bg-success'}">${prioridad}</span>
-                    </div>
-                   
-                    <div class="d-flex gap-2">
-                        <button class="done-button btn ${isDone ? 'btn-secondary' : 'btn-success'} btn-sm rounded">
-                            ${isDone ? 'Terminada' : 'Completar'}
-                        </button>
-                        <button class="edit-button btn btn-outline-primary btn-sm rounded">
-                            Editar
-                        </button>
-                        <button class="delete-button btn btn-outline-danger btn-sm rounded">
-                            Eliminar
-                        </button>
-                    </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <small class="text-muted"><strong>Fecha:</strong> ${task.dueDate}</small>
+                    <span class="badge ${task.prioridad === 'Alta' ? 'bg-danger' : task.prioridad === 'Media' ? 'bg-secondary' : 'bg-success'}">${task.prioridad}</span>
+                </div>
+                <div class="d-flex justify-content-between gap-1 pt-2 border-top">
+                    <select class="form-select form-select-sm status-select" style="font-size: 0.75rem;">
+                        <option value="PORHACER" ${task.status === 'PORHACER' ? 'selected' : ''}>Por Hacer</option>
+                        <option value="ENPROGRESO" ${task.status === 'ENPROGRESO' ? 'selected' : ''}>En Progreso</option>
+                        <option value="COMPLETADA" ${task.status === 'COMPLETADA' ? 'selected' : ''}>Completada</option>
+                    </select>
+                    <button class="edit-button btn btn-outline-primary btn-sm px-2 py-0" title="Editar">✏️</button>
+                    <button class="delete-button btn btn-outline-danger btn-sm px-2 py-0" title="Eliminar">🗑️</button>
                 </div>
             </div>
         `;
     }
 
-    render(filterStatus = 'TODAS') {
-        const tasksHtmlList = [];
+    render(filterText = '', statusFilter = 'TODAS') {
+        const containerPorHacer = document.querySelector('#taskList-porHacer');
+        const containerEnProgreso = document.querySelector('#taskList-enProgreso');
+        const containerCompletadas = document.querySelector('#taskList-completadas');
 
-        for (let i = 0; i < this.tasks.length; i++) {
-            const task = this.tasks[i];
-            const isDone = task.status === 'DONE' || task.status === 'Completada' || task.status === 'Terminada';
+        if (!containerPorHacer || !containerEnProgreso || !containerCompletadas) return;
 
-            if (filterStatus === 'Completadas' && !isDone) {
-                continue;
+        containerPorHacer.innerHTML = '';
+        containerEnProgreso.innerHTML = '';
+        containerCompletadas.innerHTML = '';
+
+        this.tasks.forEach(task => {
+            if (filterText && !task.name.toLowerCase().includes(filterText.toLowerCase()) && !task.description.toLowerCase().includes(filterText.toLowerCase())) {
+                return;
             }
 
-            const taskHtml = this.createTaskHtml(
-                task.id,
-                task.name,
-                task.description,
-                task.dueDate,
-                task.prioridad,
-                task.status
-            );
-            tasksHtmlList.push(taskHtml);
-        }
+            if (statusFilter === 'Completadas' && task.status !== 'COMPLETADA') {
+                return;
+            }
 
-        const tasksList = document.querySelector('#taskList');
-        if (tasksList) {
-            tasksList.innerHTML = tasksHtmlList.join('\n');
-        }
+            const html = this.createTaskHtml(task);
+
+            if (task.status === 'PORHACER') {
+                containerPorHacer.innerHTML += html;
+            } else if (task.status === 'ENPROGRESO') {
+                containerEnProgreso.innerHTML += html;
+            } else if (task.status === 'COMPLETADA') {
+                containerCompletadas.innerHTML += html;
+            }
+        });
     }
 }
